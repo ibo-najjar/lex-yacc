@@ -25,8 +25,8 @@ sign [+-]
 "alpha"     {return ALPHA;}
 "number"    {return NUMBER;}
 "real"      {return REAL;}
-"is"        {return EQUALS;}
-"isnt"    {return ISNT;}
+"is"        {return IS;}
+"isnt"      {return ISNT;}
 "and"       {return AND;}
 "or"        {return OR;}
 "not"       {return NOT;}
@@ -36,7 +36,7 @@ sign [+-]
 "if"        {return IF;}
 "then"      {return THEN;}
 "else if"   {return ELSE_IF;}
-"default"   {return default_statement;}
+"default"   {return DEFAULT;}
 ":"         |
 "-"         |
 "+"         |
