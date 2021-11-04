@@ -18,26 +18,26 @@ sign [+-]
 
 %%
 
-"begin"    {return BEGIN;}
-"."        {return END;}
+"begin"     {return BEGIN;}
+"."         {return END;}
 ">="        {return GE;}
 "<="        {return LE;}
-
-"char"      {return charType;}
-"number"    {return intType;}
-"real"      {return floatType;}
-"is"        {return isEqual;}
-"not equal" {return notEqual;}
-"and"       {return logicOp_and;}
-"or"        {return logicOp_or;}
-"not"       {return logicOp_not;}
-"until"     {return until;}
-"do"        {return begin_loop;}
-"loopend"   {return end_loop;}
-"if"        {return if_statement;}
-"elif"      {return elif_statement;}
-"ifend"     {return if_end;}
+"alpha"     {return CHAR;}
+"number"    {return INTEGER;}
+"real"      {return REAL;}
+"is"        {return EQUALS;}
+"is not"    {return ISNT;}
+"not equal" {return EQUALNT;}
+"and"       {return AND;}
+"or"        {return OR;}
+"not"       {return NOT;}
+"until do"  {return UNTIL_DO;}
+"loop end"  {return END_LOOP;}
+"if"        {return IF;}
+"else if"   {return ELSE_IF;}
+"if end"    {return IF_END;}
 "default"   {return default_statement;}
+":"         |
 "-"         |
 "+"         |
 "*"         |
