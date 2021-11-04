@@ -45,7 +45,7 @@ sign [+-]
 ","         |
 "="         |
 ">"         |
-"<"         |
+"<"         {return yytext[0];}
 
 [a-z][_a-z]*                {return identifier;}
 {sign}?{digit}+             {return integerVal;}
