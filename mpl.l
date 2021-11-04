@@ -18,12 +18,11 @@ sign [+-]
 
 %%
 
-"main>>"    {return startProgram;}
-"<<"        {return endProgram;}
-">="        {return greaterEqual;}
-"<="        {return lessEqual;}
-">"         {return greater;}
-"<"         {return less;}
+"begin"    {return BEGIN;}
+"."        {return END;}
+">="        {return GE;}
+"<="        {return LE;}
+
 "char"      {return charType;}
 "number"    {return intType;}
 "real"      {return floatType;}
@@ -45,6 +44,8 @@ sign [+-]
 "/"         |
 ","         |
 "="         |
+">"         |
+"<"         |
 "."         {return yytext[0];}
 
 [a-z][_a-z]*                {return identifier;}
