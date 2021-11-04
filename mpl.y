@@ -3,24 +3,26 @@
   #include <string.h>  
   #include <stdlib.h>
   
-  
-  extern yylineno;
-  int yylex(void);
+  int yylex();
   void yyerror(char *message);
+  extern int yylineno;
  
 %}
 
+%start PROGRAM 
+%token greaterEqual lessEqual isEqual notEqual  
+%token logicOp_and logicOp_or logicOp_not
+%token floatType charType intType 
+%token loop end_loop if_statement elif_statement default_statement logStatment 
+%token identifier floatVal integerVal charVal
 
-%locations
-%token int integerVal
-%token char charVal
-%token float floatVal
-%token greaterEqual lessEqual isEqual notEqual log_stm 
-%token logicOp_and logicOp_or logicOp_not loop end_loop if_statement elif_statement default_statement identifier
-%token dataType
-%right '='
-%left '*' '/'
+%nonassoc elif_statement
+%nonassoc default_statement
+%right greaterEqual lessEqual
+%right greater less
+%right isEqual notEqual
 %left '+' '-'
+%left '*' '/'
 %right not
 %right and 
 %right or
@@ -29,68 +31,80 @@
 
 %%
 
-line        : stmt
-            | line stmt
-            ;
-            
-ifstruct    : if_statement '(' condition ')' stmt ';' 
-            | if_statement '(' condition ')' stmt ';' default_statement stmt ';' 
-            | if_statement '(' condition ')' ifstruct ';' 
-            | if_statement '(' condition ')' ifstruct ';' default_statement ifstruct ';'
-            | if_statement '(' condition ')' stmt ';' default_statement ifstruct ';'
-            | if_statement '(' condition ')' ifstruct ';' default_statement stmt ';'
-            | ifstruct ifstruct
-            ;
+PROGRAM: BEGIN line
+       ;
 
-stmt        :        
-            ';'
-            | expr ';'
-            | assignment expr ';'
-            | declaration '=' expr ';'
-            | declaration ';'
-            | ifstruct 
-            | assignment ';'
-            ;
+line: stmt
+    | line stmt
+    ;
 
-condition   : expr isEqual expr       {$$ = $1 == $3;}
-            | expr notEqual expr      {$$ = $1 != $3;}
-            | expr greaterEqual expr  
-            | expr lessEqual expr
-            | expr '>' expr
-            | expr '<' expr
-            | expr
-            ;
+stmt:    ','
+    | '.' {printf("-------------\nPROGRAM ENDED NUMBER OF LINES >> %d\n",yylineno);exit(0);}
+    | exp ','
+    | conditions ','
+    | ifStruct 
+    | loopStruct 
+    ;
+
+exp: 
+    | identifier
+    | literal
+    | declartion
+    | exp '+' exp 
+    | exp '-' exp
+    | exp '*' exp
+    | exp '/' exp
+    | exp '>' exp
+    | exp '<' exp
+    | exp LE exp
+    | exp GE exp
+    | exp IS exp
+    | exp ISNT exp
+    | exp OR exp
+    | exp AND exp
+    | exp NOT exp
+    ;
+    
+
+declartion: NUMBER identifier 
+          | REAL identifier
+          | ALPHA identifier
+          ;
 
 
-expr        : integerVal        {$$ = $1;}
-            | floatVal          {$$ = $1;}         
-            | identifier 
-            | expr '-' expr     {$$ = $1 - $3;}
-            | expr '+' expr     {$$ = $1 + $3;}
-            | expr '*' expr     {$$ = $1 * $3;}
-            | expr '/' expr     {if($3)$$= $1 / $3; else yyerror("DIVISION BY 0");}
-            | expr '=' expr     {$$ = $1;}
-            | expr logicOp_or expr {$1 | $3;}
-            | expr logicOp_and expr {$1 & $3;}
-            ;
+ifStruct: 
+        IF exp THEN line ','             %prec ELSE_IF
+        | IF exp THEN line, DEFAULT THEN line, END_LOOP ','
+        ;
 
-assignment  : identifier '=' expr
-            | declaration '=' expr
-            ;
-          
-declaration : int identifier
-            | float identifier
-            | char identifier
-            ;
+loopStruct: UNTIL exp DO line END_LOOP ','
+          ;
+
+literal: NUMBERVAL
+       | ALPHAVAL
+       | REALVAL
+       ;
 
 
 %%
-void yyerror(char *msg) {
-    fprintf(stderr, "Error | Line: %d\n%s >> %s\n",yylineno,str,msg);
-    exit(0);
+
+int main(void){
+
+
+printf("\n------------------------------\nWELCOME TO OUR LEX-YACC PROGRAM\n>> THE PROGRAM SHOULD START WITH (>>)\n>> PROGRAM ENDS WITH (<<)\n>> WE KNOW HOW FRUSTRATING IT IS TO WRITE CODE IN CASE SENSITIVE PROGRAMS SO GUESS WHAT MPL IS CASE-INSENSITIVE!!\n");
+
+if(!yyparse())
+	{
+		printf("YOU ARE A SMOOTH DUDE !!\nCODE COMPILED WITH NO ERRORS");
+	}
+else
+	{
+			printf("\nParsing failed\n");
+	}
+    
 }
-int main(){
-    printf("\t\twelcome to my dope lexical analayzer and parser\t\t\n>> please enter code *~* :\n")
-    yyparse();
-    printf("YOU ARE A SMOOTH DUDE !!\nCODE COMPILED WITH NO ERRORS");
+
+void yyerror(char *message) {
+    fprintf(stderr, "Error | Line: %d >> %s\n",yylineno,message);
+    exit(0);
 }
