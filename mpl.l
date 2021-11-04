@@ -22,20 +22,20 @@ sign [+-]
 "."         {return END;}
 ">="        {return GE;}
 "<="        {return LE;}
-"alpha"     {return CHAR;}
-"number"    {return INTEGER;}
+"alpha"     {return ALPHA;}
+"number"    {return NUMBER;}
 "real"      {return REAL;}
 "is"        {return EQUALS;}
-"is not"    {return ISNT;}
-"not equal" {return EQUALNT;}
+"isnt"    {return ISNT;}
 "and"       {return AND;}
 "or"        {return OR;}
 "not"       {return NOT;}
-"until do"  {return UNTIL_DO;}
+"until"     {return UNTIL;}
+"do"        {return DO;}
 "loop end"  {return END_LOOP;}
 "if"        {return IF;}
+"then"      {return THEN;}
 "else if"   {return ELSE_IF;}
-"if end"    {return IF_END;}
 "default"   {return default_statement;}
 ":"         |
 "-"         |
@@ -46,7 +46,6 @@ sign [+-]
 "="         |
 ">"         |
 "<"         |
-"."         {return yytext[0];}
 
 [a-z][_a-z]*                {return identifier;}
 {sign}?{digit}+             {return integerVal;}
