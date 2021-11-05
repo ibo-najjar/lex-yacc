@@ -1,121 +1,100 @@
 %{
-  #include <stdio.h>  
-  #include <string.h>  
+  #include <stdio.h>
+  #include <string.h>
   #include <stdlib.h>
-  
-  int yylex();
-  void yyerror(char *message);
-  extern yylineno;
- 
+
+  extern int yylex();
+  void yyerror(char *s);
+  extern int yylineno;
+
 %}
 
-%locations
-%start PROGRAM 
-%token startProgram endProgram
-%token greaterEqual lessEqual isEqual notEqual  
-%token logicOp_and logicOp_or logicOp_not
-%token floatType charType intType 
-%token loop end_loop if_statement elif_statement default_statement logStatment 
-%token identifier floatVal integerVal charVal
 
-%nonassoc elif_statement
-%nonassoc default_statement
-%right greaterEqual lessEqual
-%right greater less
-%right isEqual notEqual
+%token GE LE IS ISNT
+%token AND OR NOT
+%token REAL ALPHA NUMBER
+%token UNTIL DO END_LOOP IF ELSE_IF DEFUALT THEN END_IF
+%token IDENTIFIER
+%token NUMBERVAL ALPHAVAL REALVAL
+%token END
+%nonassoc LOWER_ELSE
+%nonassoc DEFAULT
+
+%right GE LE '<' '>' IS ISNT
+%left NOT
+%left OR
+%left AND
 %left '+' '-'
 %left '*' '/'
-%right not
-%right and 
-%right or
 
 
 
 %%
-PROGRAM: startProgram line
-       ;
+
 
 line: stmt
-    | line stmt
+    | line stmt 
     ;
 
-stmt:    ';'
-    | endProgram {printf("PROGRAM ENDED NUMBER OF LINES >> %d",yylineno);}
-    | conditions ';'
-    | ifStruct 
+stmt:    ','
+    | exp ','
+    | exp IS exp ','
+    | exp ISNT exp ','
+    | ifStruct
     | loopStruct
-    | logStatment '(' conditions ')'';' 
-    | assignment ';'
-    | declartion ';'
+    | END {printf("-------------\nPROGRAM ENDED NUMBER OF LINES >> %d\n",yylineno);exit(0);}
     ;
 
-declartion: intType identifier
-          | charType identifier
-          | floatType identifier
-          ;
 
-conditions: expr 
-          | conditions isEqual expr 
-          | conditions notEqual expr 
-          | conditions greater expr 
-          | conditions less expr 
-          | conditions greaterEqual expr 
-          | conditions lessEqual expr 
-          ;
-
-expr: term 
-    | '-' term 
-    | expr '+' term 
-    | expr '-' term 
-    ;
-    
-term: factor 
-    | term '*' factor 
-    | term '/' factor 
-    | term '%' factor 
+exp:
+    | IDENTIFIER
+    | literal
+    | declartion
+    | exp IS exp    
+    | exp ISNT exp    
+    | exp '+' exp
+    | exp '-' exp
+    | exp '*' exp
+    | exp '/' exp
+    | exp LE exp
+    | exp GE exp
+    | exp OR exp
+    | exp AND exp
+    | exp NOT exp
+    | exp '>' exp
+    | exp '<' exp
+    | '(' exp ')'
     ;
 
-factor: integerVal 
-      | floatVal 
-      | charVal
-      | '(' conditions ')'
-      ;
 
-assignment: declartion '=' conditions
-          | identifier '=' conditions 
+declartion: REAL IDENTIFIER
+          | ALPHA IDENTIFIER
+          | NUMBER IDENTIFIER
           ;
 
 
-ifStruct: 
-        if_statement '(' conditions ')' ':' stmt              %prec elif_statement
-        | if_statement '(' conditions ')' ':' stmt default_statement ':' stmt
+ifStruct: IF exp THEN stmt %prec LOWER_ELSE 
+        | IF exp THEN stmt DEFAULT THEN stmt
         ;
+    
+loopStruct: UNTIL exp DO stmt END_LOOP
+          ;
 
-loopStruct: loop '(' conditions ')' ':' line end_loop '(' conditions ')' ';'
-
-
+literal: NUMBERVAL
+       | ALPHAVAL
+       | REALVAL
+       ;
 
 
 %%
 
-int main(void){
-/*
-printf("⠀⠀⠀⠀⠀⠀⠀⠀⠀⣰⣷⣦⠀⠀⠀⠀⠀⠀⠀⠀\n")⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀
-printf("⠀⠀⠀⠀⠀⠀⠀⣀⣶⣿⣿⣿⣿⣿⣿⣷⣶⣶⣶⣦⣀⡀⠀⢀⣴⣇⠀⠀⠀⠀\n")
-printf("⠀⠀⠀⠀⠀⢠⣾⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⠀⠀⠀⠀\n")
-printf("⠀⠀⠀⠀⣰⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⠀⠀⠀⠀\n")
-printf("⠀⠀⠀⣴⣿⣿⣿⣿⠛⣿⣿⣿⣿⣿⣿⣿⣿⡿⣿⣿⣿⣿⣿⣿⣿⣿⣄⠀⠀⠀\n")
-printf("⠀⠀⣾⣿⣿⣿⣿⣿⣶⣿⣯⣭⣬⣉⣽⣿⣿⣄⣼⣿⣿⣿⣿⣿⣿⣿⣿⣷⡀⠀\n")
-printf("⠀⣸⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⢿⣿⣿⣿⣿⣿⣿⣿⣿⣿⡄\n")
-printf("⢸⣿⣿⣿⣿⠟⠋⠉⠉⠉⠉⠉⠉⠉⠉⠉⠉⠉⠁⣿⣿⣿⣿⡿⠛⠉⠉⠉⠉⠁\n")
-printf("⠘⠛⠛⠛⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠛⠛⠛⠃⠀⠀⠀")
-printf("\n------------------------------\nWELCOME TO OUR LEX-YACC PROGRAM\n>> THE PROGRAM SHOULD START WITH (>>)\n>> PROGRAM ENDS WITH (<<)\n>> WE KNOW HOW FRUSTRATING IT IS TO WRITE CODE IN CASE SENSITIVE PROGRAMS SO GUESS WHAT MPL IS CASE-INSENSITIVE!!\n");*/
 
-    yyparse();
-    printf("YOU ARE A SMOOTH DUDE !!\nCODE COMPILED WITH NO ERRORS");
-}
-
-void yyerror(char *message) {
-    fprintf(stderr, "Error | Line: %d >> %s\n",yylineno,message);
+void yyerror(char *s) {
+    fprintf(stderr, "Error | Line: %d >> %s\n",yylineno,s);
     exit(0);
+}
+int main(){
+    yyparse();
+    printf("WOWOWOOWOWOWWW");
+    return 0;
 }
