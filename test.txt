@@ -1,0 +1,43 @@
+number year is 2, COURSECOUNT is 4, count is 0, testcount is 2,
+
+number biology_mid is 98, english_mid is 87,
+calculus_mid is 63, physics_mid is 100,
+calculus_final is 78,
+english_final is 94, biology_final is 74,
+physics_final is 88,  
+
+real gpa, physics_ave, calculus_ave,
+biology_ave, english_ave,
+
+alpha grade is 'C',
+
+until number i <= coursecount do
+    count is count + i,
+    end loop
+
+physics_ave is (physics_final + physics_mid) / testcount,
+calculus_ave is (calculus_final + calculus_mid) / Testcount,
+english_ave is (english_final + english_mid) / TESTCOUNT,
+biology_ave is (biology_final + biology_mid) / TeStCoUnT,
+GPA is (physics_ave + calculus_ave + english_ave + biology_ave) / courseCOUNT,
+
+if gpa is 4.0 or gpa >= 3.9 then
+    grade is 'A',
+
+if gpa < 3.9 and gpa > 3.5 then
+    grade is 'B',
+
+if gpa < 3.5 and gpa > 2.5 then 
+    grade is 'C',
+
+if gpa < 2.5 and gpa > 2.0 then 
+    grade is 'D',
+
+if gpa < 2.0 then
+    grade is 'F',
+
+default then 
+    grade is 'h',
+
+
+end
