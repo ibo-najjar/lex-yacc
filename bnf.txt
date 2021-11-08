@@ -1,0 +1,40 @@
+<program> :== <stmt>
+          | <program> <stmt>
+          
+<stmt> :== ,
+     | <exp> ,
+     | <ifstruct>
+     | <loopstruct>
+     | end
+
+<exp> :== IDENTIFIER
+    | <literal>
+    | <declartion>
+    | <exp> IS <exp>    
+    | <exp> ISNT <exp>    
+    | <exp> + <exp>
+    | <exp> - <exp>
+    | <exp> * <exp>
+    | <exp> / <exp>
+    | <exp> LE <exp>
+    | <exp> GE <exp>
+    | <exp> OR <exp>
+    | <exp> AND <exp>
+    | <exp> NOT <exp>
+    | <exp> > <exp>
+    | <exp> < <exp>
+    | ( <exp> )
+
+<declartion> :==  REAL IDENTIFIER
+             | ALPHA IDENTIFIER
+             | NUMBER IDENTIFIER
+
+<ifStruct> :== IF <exp> THEN <stmt> %prec LOWER_ELSE 
+           | IF <exp> THEN <stmt> DEFAULT THEN <stmt>
+    
+<loopStruct> :== UNTIL <exp> DO <stmt> END_LOOP
+
+<literal>: NUMBERVAL
+         | ALPHAVAL
+         | REALVAL
+       
